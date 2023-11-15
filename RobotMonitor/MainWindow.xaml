@@ -8,6 +8,7 @@
         xmlns:local="clr-namespace:RobotMonitor"
         xmlns:vm="clr-namespace:RobotMonitor.ViewModels"
         xmlns:bh="clr-namespace:RobotMonitor.Behaviors"
+        xmlns:converter="clr-namespace:RobotMonitor.Converters"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800"
         TextElement.Foreground="{DynamicResource MaterialDesignBody}"
@@ -31,22 +32,26 @@
             <StackPanel>
                 <Label Content="IPアドレス"/>
                 <TextBox Text="{Binding IpAddress.Value}"
-                         IsReadOnly="{Binding IsConnected.Value}">
-                </TextBox>
+                         IsEnabled="{Binding IsConnected.Value, Converter={StaticResource InvertBooleanConverter}}"
+                         Margin="5"/>
             </StackPanel>
             <StackPanel>
-                <Label Content="操作用のポート番号"/>
+                <Label Content="操作用ポート番号"/>
                 <TextBox Text="{Binding Port.Value}"
-                         IsReadOnly="{Binding IsConnected.Value}"></TextBox>
+                         IsEnabled="{Binding IsConnected.Value, Converter={StaticResource InvertBooleanConverter}}"
+                         Margin="5"/>
             </StackPanel>
             <StackPanel>
                 <Label Content="カメラのポート番号"/>
                 <TextBox Text="{Binding CameraPort.Value}"
-                         IsReadOnly="{Binding IsConnected.Value}"></TextBox>
+                         IsEnabled="{Binding IsConnected.Value, Converter={StaticResource InvertBooleanConverter}}"
+                         Margin="5"/>
             </StackPanel>
             <Button Command="{Binding ConnectRobotCommand}"
+                    IsEnabled="{Binding IsConnected.Value, Converter={StaticResource InvertBooleanConverter}}"
                     Margin="5">接続</Button>
             <Button Command="{Binding DisconnectRobotCommand}"
+                    IsEnabled="{Binding IsConnected.Value}"
                     Margin="5">切断</Button>
         </StackPanel>
     </Grid>

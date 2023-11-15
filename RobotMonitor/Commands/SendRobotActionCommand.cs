@@ -24,22 +24,21 @@ public class SendRobotActionCommand : ICommand
     {
         if (parameter is null) return;
         var key = (Key)parameter;
-        Console.WriteLine(key.ToString());
-        // switch (key)
-        // {
-        //     case Key.W:
-        //         _vm.RobotController?.SendCommand(RobotAction.MoveForward);
-        //         break;
-        //     case Key.S:
-        //         _vm.RobotController?.SendCommand(RobotAction.MoveBackward);
-        //         break;
-        //     case Key.A:
-        //         _vm.RobotController?.SendCommand(RobotAction.TurnLeft);
-        //         break;
-        //     case Key.D:
-        //         _vm.RobotController?.SendCommand(RobotAction.TurnRight);
-        //         break;
-        // }
+        switch (key)
+        {
+            case Key.W:
+                _vm.RobotController?.SendAction(RobotAction.MoveForward);
+                break;
+            case Key.S:
+                _vm.RobotController?.SendAction(RobotAction.MoveBackward);
+                break;
+            case Key.A:
+                _vm.RobotController?.SendAction(RobotAction.TurnLeft);
+                break;
+            case Key.D:
+                _vm.RobotController?.SendAction(RobotAction.TurnRight);
+                break;
+        }
     }
 
     public event EventHandler? CanExecuteChanged;

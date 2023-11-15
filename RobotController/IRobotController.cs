@@ -4,5 +4,5 @@ public interface IRobotController
 {
     void Connect();
     void Disconnect();
-    void SendCommand(RobotAction action);
+    void SendAction(RobotAction action);
 }

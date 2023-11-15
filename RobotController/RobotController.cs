@@ -12,16 +12,15 @@ public class RobotController : IRobotController
     private IPAddress _ipAddress;
     private int _port;
     private int _cameraPort;
-    private Socket? _socket;
     private readonly MjpegDecoder _mjpegDecoder = new();
     
     public event EventHandler<FrameReadyEventArgs>? CameraImageReady;
     
     private static readonly Dictionary<RobotAction, string> ActionToCommand = new()
     {
-        {RobotAction.MoveForward, "a"},
-        {RobotAction.MoveBackward, "b"},
-        {RobotAction.TurnLeft, "c"},
+        {RobotAction.MoveForward, "w"},
+        {RobotAction.MoveBackward, "s"},
+        {RobotAction.TurnLeft, "a"},
         {RobotAction.TurnRight, "d"},
     };
     
@@ -30,15 +29,12 @@ public class RobotController : IRobotController
         _ipAddress = IPAddress.Parse(ipAddress);
         _port = port;
         _cameraPort = cameraPort;
+        
         _mjpegDecoder.FrameReady += _mjpegDecoderOnFrameReady;
     }
     
     public void Connect()
     {
-        // Create socket
-        IPEndPoint remoteEndPoint = new(_ipAddress, _port);
-        _socket = new Socket(_ipAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
-        _socket.Connect(remoteEndPoint);
         // Connect to the robot's camera stream
         var uri = new Uri($"http://{_ipAddress}:{_cameraPort}/?action=stream");
         _mjpegDecoder.ParseStream(uri);
@@ -46,18 +42,22 @@ public class RobotController : IRobotController
 
     public void Disconnect()
     {
-        // Close socket
-        _socket?.Shutdown(SocketShutdown.Both);
-        _socket?.Close();
         // Stop camera stream
         _mjpegDecoder.StopStream();
     }
 
-    public void SendCommand(RobotAction action)
+    public void SendAction(RobotAction action)
     {
+        // Create socket
+        var socket = new Socket(_ipAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+        IPEndPoint remoteEndPoint = new(_ipAddress, _port);
+        socket.Connect(remoteEndPoint);
+        // Send command
         var command = ActionToCommand[action];
         var bytes = Encoding.ASCII.GetBytes(command);
-        _socket?.Send(bytes);
+        socket.Send(bytes);
+        socket.Shutdown(SocketShutdown.Both);
+        socket.Close();
     }
     
     private void _mjpegDecoderOnFrameReady(object? sender, FrameReadyEventArgs e)
