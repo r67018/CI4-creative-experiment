@@ -25,6 +25,9 @@
         <bh:KeyDownBehavior KeyDownCommand="{Binding SendRobotActionCommand}"/>
     </i:Interaction.Behaviors>
     <Grid>
+        <materialDesign:Snackbar MessageQueue="{Binding SnackbarMessageQueue}"
+                                 VerticalAlignment="Top"
+                                 HorizontalAlignment="Center"/>
         <ScrollViewer VerticalScrollBarVisibility="Auto">
             <StackPanel>
                 <Image Source="{Binding CameraImage}"

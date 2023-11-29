@@ -5,6 +5,7 @@ using System.Drawing;
 using System.IO;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
+using MaterialDesignThemes.Wpf;
 using Reactive.Bindings;
 using Reactive.Bindings.TinyLinq;
 using RobotController;
@@ -32,6 +33,9 @@ public class MainWindowViewModel : INotifyPropertyChanged
     
     public RobotController.RobotController? RobotController { get; set; }
     public BitmapImage? CameraImage { get; private set; }
+    
+    public SnackbarMessageQueue SnackbarMessageQueue { get; } = new();
+    
     public MainWindowViewModel()
     {
         ConnectRobotCommand = IsConnected.Select(x => !x).ToReactiveCommand();
@@ -76,7 +80,10 @@ public class MainWindowViewModel : INotifyPropertyChanged
         {
             Console.WriteLine(e);
             DisconnectRobot();
+            SnackbarMessageQueue.Enqueue("ロボットへの接続に失敗しました。");
+            return;
         }
+        SnackbarMessageQueue.Enqueue("ロボットへの接続に成功しました。");
     }
     
     private void DisconnectRobot()
@@ -84,5 +91,6 @@ public class MainWindowViewModel : INotifyPropertyChanged
         RobotController?.Disconnect();
         RobotController = null;
         IsConnected.Value = false;
+        SnackbarMessageQueue.Enqueue("ロボットとの接続を切断しました。");
     }
 }
