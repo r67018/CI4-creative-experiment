@@ -16,14 +16,14 @@ public class RobotController : IRobotController
     
     public event EventHandler<FrameReadyEventArgs>? CameraImageReady;
     
-    private static readonly Dictionary<RobotAction, string> ActionToCommand = new()
+    private static class CommandMask
     {
-        {RobotAction.MoveForward, "w"},
-        {RobotAction.MoveBackward, "s"},
-        {RobotAction.TurnLeft, "a"},
-        {RobotAction.TurnRight, "d"},
-        {RobotAction.SpecialAction, " "},
-    };
+        public const byte MoveForward = 0b0000_0001;
+        public const byte MoveBackward = 0b0000_0010;
+        public const byte TurnLeft = 0b0000_0100;
+        public const byte TurnRight = 0b0000_1000;
+        public const byte SpecialAction = 0b0001_0000;
+    }
     
     public RobotController(string ipAddress, int port, int cameraPort)
     {
@@ -47,16 +47,39 @@ public class RobotController : IRobotController
         _mjpegDecoder.StopStream();
     }
 
-    public void SendAction(RobotAction action)
+    public void SendAction(IEnumerable<RobotAction> actions)
     {
         // Create socket
         var socket = new Socket(_ipAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
         IPEndPoint remoteEndPoint = new(_ipAddress, _port);
         socket.Connect(remoteEndPoint);
+        // Convert actions to bit flags
+        byte command = 0;
+        foreach (var action in actions)
+        {
+            switch (action)
+            {
+                case RobotAction.MoveForward:
+                    command |= CommandMask.MoveForward;
+                    break;
+                case RobotAction.MoveBackward:
+                    command |= CommandMask.MoveBackward;
+                    break;
+                case RobotAction.TurnLeft:
+                    command |= CommandMask.TurnLeft;
+                    break;
+                case RobotAction.TurnRight:
+                    command |= CommandMask.TurnRight;
+                    break;
+                case RobotAction.SpecialAction:
+                    command |= CommandMask.SpecialAction;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(action), action, null);
+            }
+        }
         // Send command
-        var command = ActionToCommand[action];
-        var bytes = Encoding.ASCII.GetBytes(command);
-        socket.Send(bytes);
+        socket.Send(new[] {command});
         socket.Shutdown(SocketShutdown.Both);
         socket.Close();
     }

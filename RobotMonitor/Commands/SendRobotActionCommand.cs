@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Windows.Input;
 using RobotController;
 using RobotMonitor.ViewModels;
@@ -23,32 +24,33 @@ public class SendRobotActionCommand : ICommand
     public void Execute(object? parameter)
     {
         if (parameter is null) return;
-        var key = (Key)parameter;
+        
+        List<RobotAction> actions = new();
+        if (Keyboard.IsKeyDown(Key.W))
+        {
+            actions.Add(RobotAction.MoveForward);
+        }
+        if (Keyboard.IsKeyDown(Key.S))
+        {
+            actions.Add(RobotAction.MoveBackward);
+        }
+        if (Keyboard.IsKeyDown(Key.A))
+        {
+            actions.Add(RobotAction.TurnLeft);
+        }
+        if (Keyboard.IsKeyDown(Key.D))
+        {
+            actions.Add(RobotAction.TurnRight);
+        }
+
         try
         {
-            switch (key)
-            {
-                case Key.W:
-                    _vm.RobotController?.SendAction(RobotAction.MoveForward);
-                    break;
-                case Key.S:
-                    _vm.RobotController?.SendAction(RobotAction.MoveBackward);
-                    break;
-                case Key.A:
-                    _vm.RobotController?.SendAction(RobotAction.TurnLeft);
-                    break;
-                case Key.D:
-                    _vm.RobotController?.SendAction(RobotAction.TurnRight);
-                    break;
-                case Key.Space:
-                    _vm.RobotController?.SendAction(RobotAction.SpecialAction);
-                    break;
-            }
+            _vm.RobotController?.SendAction(actions);
         }
-        catch (Exception e)
+        catch
         {
-            Console.WriteLine(e);
             _vm.DisconnectRobotCommand.Execute();
+            _vm.SnackbarMessageQueue.Enqueue("エラーが発生しました。ロボットとの接続を切断します。");
         }
     }
 
