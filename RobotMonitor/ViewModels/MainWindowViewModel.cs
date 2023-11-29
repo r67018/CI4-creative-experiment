@@ -39,9 +39,27 @@ public class MainWindowViewModel : INotifyPropertyChanged
     public MainWindowViewModel()
     {
         ConnectRobotCommand = IsConnected.Select(x => !x).ToReactiveCommand();
-        ConnectRobotCommand.Subscribe(_ => ConnectRobot());
+        ConnectRobotCommand.Subscribe(_ =>
+        {
+            try
+            {
+                ConnectRobot();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                DisconnectRobot();
+                SnackbarMessageQueue.Enqueue("ロボットへの接続に失敗しました。");
+                return;
+            }
+            SnackbarMessageQueue.Enqueue("ロボットへの接続に成功しました。");
+        });
         DisconnectRobotCommand = IsConnected.Select(x => x).ToReactiveCommand();
-        DisconnectRobotCommand.Subscribe(_ => DisconnectRobot());
+        DisconnectRobotCommand.Subscribe(_ =>
+        {
+            DisconnectRobot();
+            SnackbarMessageQueue.Enqueue("ロボットとの接続を切断しました。");
+        });
         
         IpAddress.Value = "192.168.10.4";
         Port.Value = 1234;
@@ -70,27 +88,15 @@ public class MainWindowViewModel : INotifyPropertyChanged
     {
         var robotController = new RobotController.RobotController(IpAddress.Value, Port.Value, CameraPort.Value);
         robotController.CameraImageReady += RobotCameraFrameOnReady;
-        try
-        {
-            robotController.Connect();
-            RobotController = robotController;
-            IsConnected.Value = true;
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-            DisconnectRobot();
-            SnackbarMessageQueue.Enqueue("ロボットへの接続に失敗しました。");
-            return;
-        }
-        SnackbarMessageQueue.Enqueue("ロボットへの接続に成功しました。");
+        robotController.Connect();
+        RobotController = robotController;
+        IsConnected.Value = true;
     }
     
-    private void DisconnectRobot()
+    public void DisconnectRobot()
     {
         RobotController?.Disconnect();
         RobotController = null;
         IsConnected.Value = false;
-        SnackbarMessageQueue.Enqueue("ロボットとの接続を切断しました。");
     }
 }

@@ -53,7 +53,7 @@ public class SendRobotActionCommand : ICommand
         }
         catch
         {
-            _vm.DisconnectRobotCommand.Execute();
+            _vm.DisconnectRobot();
             _vm.SnackbarMessageQueue.Enqueue("操作中にエラーが発生しました。ロボットとの接続を切断します。");
         }
     }

@@ -36,6 +36,13 @@ public class RobotController : IRobotController
     
     public void Connect()
     {
+        // Create socket
+        var socket = new Socket(_ipAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+        IPEndPoint remoteEndPoint = new(_ipAddress, _port);
+        socket.Connect(remoteEndPoint);
+        // Send null byte to test connection
+        socket.Send(new byte[] {0});
+        
         // Connect to the robot's camera stream
         var uri = new Uri($"http://{_ipAddress}:{_cameraPort}/?action=stream");
         _mjpegDecoder.ParseStream(uri);
