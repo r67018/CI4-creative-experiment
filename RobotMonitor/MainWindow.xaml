@@ -31,8 +31,7 @@
         <ScrollViewer VerticalScrollBarVisibility="Auto">
             <StackPanel>
                 <Image Source="{Binding CameraImage}"
-                       Width="350"
-                       Height="350"></Image>
+                       Height="450"></Image>
                 <StackPanel>
                     <Label Content="IPアドレス"/>
                     <TextBox Text="{Binding IpAddress.Value}"
