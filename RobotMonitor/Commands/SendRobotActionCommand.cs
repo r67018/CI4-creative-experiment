@@ -42,6 +42,10 @@ public class SendRobotActionCommand : ICommand
         {
             actions.Add(RobotAction.TurnRight);
         }
+        if (Keyboard.IsKeyDown(Key.Space))
+        {
+            actions.Add(RobotAction.SpecialAction);
+        }
 
         try
         {
