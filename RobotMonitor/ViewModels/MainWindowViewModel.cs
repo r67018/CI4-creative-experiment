@@ -6,6 +6,7 @@ using System.IO;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using Reactive.Bindings;
+using Reactive.Bindings.TinyLinq;
 using RobotController;
 using RobotMonitor.Commands;
 
@@ -20,8 +21,8 @@ public class MainWindowViewModel : INotifyPropertyChanged
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 
-    public ICommand ConnectRobotCommand => new ConnectRobotCommand(this);
-    public ICommand DisconnectRobotCommand => new DisconnectRobotCommand(this);
+    public ReactiveCommand ConnectRobotCommand { get; }
+    public ReactiveCommand DisconnectRobotCommand { get; }
     public ICommand SendRobotActionCommand => new SendRobotActionCommand(this);
     
     public ReactivePropertySlim<bool> IsConnected { get; } = new(false);
@@ -33,6 +34,11 @@ public class MainWindowViewModel : INotifyPropertyChanged
     public BitmapImage? CameraImage { get; private set; }
     public MainWindowViewModel()
     {
+        ConnectRobotCommand = IsConnected.Select(x => !x).ToReactiveCommand();
+        ConnectRobotCommand.Subscribe(_ => ConnectRobot());
+        DisconnectRobotCommand = IsConnected.Select(x => x).ToReactiveCommand();
+        DisconnectRobotCommand.Subscribe(_ => DisconnectRobot());
+        
         IpAddress.Value = "192.168.10.4";
         Port.Value = 1234;
         CameraPort.Value = 8080;
@@ -54,5 +60,21 @@ public class MainWindowViewModel : INotifyPropertyChanged
         // bitmapImage.EndInit();
         // bitmapImage.Freeze();
         // CameraImage = bitmapImage;
+    }
+    
+    private void ConnectRobot()
+    {
+        var robotController = new RobotController.RobotController(IpAddress.Value, Port.Value, CameraPort.Value);
+        robotController.CameraImageReady += RobotCameraFrameOnReady;
+        robotController.Connect();
+        RobotController = robotController;
+        IsConnected.Value = true;
+    }
+    
+    private void DisconnectRobot()
+    {
+        RobotController?.Disconnect();
+        RobotController = null;
+        IsConnected.Value = false;
     }
 }
