@@ -24,20 +24,28 @@ public class SendRobotActionCommand : ICommand
     {
         if (parameter is null) return;
         var key = (Key)parameter;
-        switch (key)
+        try
         {
-            case Key.W:
-                _vm.RobotController?.SendAction(RobotAction.MoveForward);
-                break;
-            case Key.S:
-                _vm.RobotController?.SendAction(RobotAction.MoveBackward);
-                break;
-            case Key.A:
-                _vm.RobotController?.SendAction(RobotAction.TurnLeft);
-                break;
-            case Key.D:
-                _vm.RobotController?.SendAction(RobotAction.TurnRight);
-                break;
+            switch (key)
+            {
+                case Key.W:
+                    _vm.RobotController?.SendAction(RobotAction.MoveForward);
+                    break;
+                case Key.S:
+                    _vm.RobotController?.SendAction(RobotAction.MoveBackward);
+                    break;
+                case Key.A:
+                    _vm.RobotController?.SendAction(RobotAction.TurnLeft);
+                    break;
+                case Key.D:
+                    _vm.RobotController?.SendAction(RobotAction.TurnRight);
+                    break;
+            }
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            _vm.DisconnectRobotCommand.Execute();
         }
     }
 

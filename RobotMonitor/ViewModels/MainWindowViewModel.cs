@@ -66,9 +66,17 @@ public class MainWindowViewModel : INotifyPropertyChanged
     {
         var robotController = new RobotController.RobotController(IpAddress.Value, Port.Value, CameraPort.Value);
         robotController.CameraImageReady += RobotCameraFrameOnReady;
-        robotController.Connect();
-        RobotController = robotController;
-        IsConnected.Value = true;
+        try
+        {
+            robotController.Connect();
+            RobotController = robotController;
+            IsConnected.Value = true;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            DisconnectRobot();
+        }
     }
     
     private void DisconnectRobot()
