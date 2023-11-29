@@ -27,8 +27,8 @@
     <Grid>
         <StackPanel>
             <Image Source="{Binding CameraImage}"
-                   Width="200"
-                   Height="200"></Image>
+                   Width="350"
+                   Height="350"></Image>
             <StackPanel>
                 <Label Content="IPアドレス"/>
                 <TextBox Text="{Binding IpAddress.Value}"
