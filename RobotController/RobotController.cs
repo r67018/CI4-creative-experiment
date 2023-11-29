@@ -22,6 +22,7 @@ public class RobotController : IRobotController
         {RobotAction.MoveBackward, "s"},
         {RobotAction.TurnLeft, "a"},
         {RobotAction.TurnRight, "d"},
+        {RobotAction.SpecialAction, " "},
     };
     
     public RobotController(string ipAddress, int port, int cameraPort)

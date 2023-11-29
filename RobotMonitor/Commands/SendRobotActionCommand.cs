@@ -40,6 +40,9 @@ public class SendRobotActionCommand : ICommand
                 case Key.D:
                     _vm.RobotController?.SendAction(RobotAction.TurnRight);
                     break;
+                case Key.Space:
+                    _vm.RobotController?.SendAction(RobotAction.SpecialAction);
+                    break;
             }
         }
         catch (Exception e)

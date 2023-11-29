@@ -6,4 +6,5 @@ public enum RobotAction
     MoveBackward,
     TurnLeft,
     TurnRight,
+    SpecialAction,
 }
