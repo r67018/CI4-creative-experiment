@@ -50,7 +50,7 @@ public class SendRobotActionCommand : ICommand
         catch
         {
             _vm.DisconnectRobotCommand.Execute();
-            _vm.SnackbarMessageQueue.Enqueue("エラーが発生しました。ロボットとの接続を切断します。");
+            _vm.SnackbarMessageQueue.Enqueue("操作中にエラーが発生しました。ロボットとの接続を切断します。");
         }
     }
 
