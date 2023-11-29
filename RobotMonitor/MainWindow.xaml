@@ -25,34 +25,36 @@
         <bh:KeyDownBehavior KeyDownCommand="{Binding SendRobotActionCommand}"/>
     </i:Interaction.Behaviors>
     <Grid>
-        <StackPanel>
-            <Image Source="{Binding CameraImage}"
-                   Width="350"
-                   Height="350"></Image>
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
             <StackPanel>
-                <Label Content="IPアドレス"/>
-                <TextBox Text="{Binding IpAddress.Value}"
-                         IsEnabled="{Binding IsConnected.Value, Converter={StaticResource InvertBooleanConverter}}"
-                         Margin="5"/>
+                <Image Source="{Binding CameraImage}"
+                       Width="350"
+                       Height="350"></Image>
+                <StackPanel>
+                    <Label Content="IPアドレス"/>
+                    <TextBox Text="{Binding IpAddress.Value}"
+                             IsEnabled="{Binding IsConnected.Value, Converter={StaticResource InvertBooleanConverter}}"
+                             Margin="5"/>
+                </StackPanel>
+                <StackPanel>
+                    <Label Content="操作用ポート番号"/>
+                    <TextBox Text="{Binding Port.Value}"
+                             IsEnabled="{Binding IsConnected.Value, Converter={StaticResource InvertBooleanConverter}}"
+                             Margin="5"/>
+                </StackPanel>
+                <StackPanel>
+                    <Label Content="カメラのポート番号"/>
+                    <TextBox Text="{Binding CameraPort.Value}"
+                             IsEnabled="{Binding IsConnected.Value, Converter={StaticResource InvertBooleanConverter}}"
+                             Margin="5"/>
+                </StackPanel>
+                <Button Command="{Binding ConnectRobotCommand}"
+                        IsEnabled="{Binding IsConnected.Value, Converter={StaticResource InvertBooleanConverter}}"
+                        Margin="5">接続</Button>
+                <Button Command="{Binding DisconnectRobotCommand}"
+                        IsEnabled="{Binding IsConnected.Value}"
+                        Margin="5">切断</Button>
             </StackPanel>
-            <StackPanel>
-                <Label Content="操作用ポート番号"/>
-                <TextBox Text="{Binding Port.Value}"
-                         IsEnabled="{Binding IsConnected.Value, Converter={StaticResource InvertBooleanConverter}}"
-                         Margin="5"/>
-            </StackPanel>
-            <StackPanel>
-                <Label Content="カメラのポート番号"/>
-                <TextBox Text="{Binding CameraPort.Value}"
-                         IsEnabled="{Binding IsConnected.Value, Converter={StaticResource InvertBooleanConverter}}"
-                         Margin="5"/>
-            </StackPanel>
-            <Button Command="{Binding ConnectRobotCommand}"
-                    IsEnabled="{Binding IsConnected.Value, Converter={StaticResource InvertBooleanConverter}}"
-                    Margin="5">接続</Button>
-            <Button Command="{Binding DisconnectRobotCommand}"
-                    IsEnabled="{Binding IsConnected.Value}"
-                    Margin="5">切断</Button>
-        </StackPanel>
+        </ScrollViewer>
     </Grid>
 </Window>
