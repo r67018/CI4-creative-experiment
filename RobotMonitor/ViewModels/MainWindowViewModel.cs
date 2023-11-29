@@ -40,7 +40,6 @@ public class MainWindowViewModel : INotifyPropertyChanged
 
     public void RobotCameraFrameOnReady(object? sender, MjpegProcessor.FrameReadyEventArgs e)
     {
-        Console.WriteLine(e.BitmapImage);
         CameraImage = e.BitmapImage;
         OnPropertyChanged(nameof(CameraImage));
         // Convert the bitmap to a BitmapImage
