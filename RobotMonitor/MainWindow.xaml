@@ -38,8 +38,13 @@
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
-                <Image Grid.Row="0"
-                       Source="{Binding CameraImage}"></Image>
+                <Grid>
+                    <Image Grid.Row="0"
+                           Source="{Binding CameraImage}"></Image>
+                    <Image DockPanel.Dock="Right" Source="{Binding FieldMapImage}"
+                           HorizontalAlignment="Right" VerticalAlignment="Top"
+                           Height="130" Margin="5"/>
+                </Grid>
                 <StackPanel Grid.Row="1">
                     <Label Content="IPアドレス"/>
                     <TextBox Text="{Binding IpAddress.Value}"

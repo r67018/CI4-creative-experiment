@@ -10,6 +10,8 @@ using Reactive.Bindings;
 using Reactive.Bindings.TinyLinq;
 using RobotController;
 using RobotMonitor.Commands;
+using RobotMonitor.Helper;
+using Image = System.Windows.Controls.Image;
 
 namespace RobotMonitor.ViewModels;
 
@@ -33,7 +35,8 @@ public class MainWindowViewModel : INotifyPropertyChanged
     
     public RobotController.RobotController? RobotController { get; set; }
     public BitmapImage? CameraImage { get; private set; }
-    
+    public BitmapImage FieldMapImage { get; } = ImageHelper.Bitmap2BitmapImage(Resource.FieldMap);
+
     public SnackbarMessageQueue SnackbarMessageQueue { get; } = new();
     
     public MainWindowViewModel()
