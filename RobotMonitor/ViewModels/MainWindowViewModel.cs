@@ -98,5 +98,6 @@ public class MainWindowViewModel : INotifyPropertyChanged
         RobotController?.Disconnect();
         RobotController = null;
         IsConnected.Value = false;
+        CameraImage = null;
     }
 }
