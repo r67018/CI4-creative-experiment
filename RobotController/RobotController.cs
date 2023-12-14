@@ -42,6 +42,8 @@ public class RobotController : IRobotController
         socket.Connect(remoteEndPoint);
         // Send null byte to test connection
         socket.Send(new byte[] {0});
+        socket.Shutdown(SocketShutdown.Both);
+        socket.Close();
         
         // Connect to the robot's camera stream
         var uri = new Uri($"http://{_ipAddress}:{_cameraPort}/?action=stream");
