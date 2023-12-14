@@ -45,23 +45,20 @@
                            HorizontalAlignment="Right" VerticalAlignment="Top"
                            Height="130" Margin="5"/>
                 </Grid>
-                <StackPanel Grid.Row="1">
+                <StackPanel Grid.Row="1" Margin="5">
                     <Label Content="IPアドレス"/>
                     <TextBox Text="{Binding IpAddress.Value}"
-                             IsEnabled="{Binding IsConnected.Value, Converter={StaticResource InvertBooleanConverter}}"
-                             Margin="5"/>
+                             IsEnabled="{Binding IsConnected.Value, Converter={StaticResource InvertBooleanConverter}}"/>
                 </StackPanel>
-                <StackPanel Grid.Row="2">
+                <StackPanel Grid.Row="2" Margin="5">
                     <Label Content="操作用ポート番号"/>
                     <TextBox Text="{Binding Port.Value}"
-                             IsEnabled="{Binding IsConnected.Value, Converter={StaticResource InvertBooleanConverter}}"
-                             Margin="5"/>
+                             IsEnabled="{Binding IsConnected.Value, Converter={StaticResource InvertBooleanConverter}}"/>
                 </StackPanel>
-                <StackPanel Grid.Row="3">
+                <StackPanel Grid.Row="3" Margin="5">
                     <Label Content="カメラのポート番号"/>
                     <TextBox Text="{Binding CameraPort.Value}"
-                             IsEnabled="{Binding IsConnected.Value, Converter={StaticResource InvertBooleanConverter}}"
-                             Margin="5"/>
+                             IsEnabled="{Binding IsConnected.Value, Converter={StaticResource InvertBooleanConverter}}"/>
                 </StackPanel>
                 <Button Grid.Row="4"
                          Command="{Binding ConnectRobotCommand}"
