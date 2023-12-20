@@ -4,6 +4,7 @@ using System.Runtime.CompilerServices;
 using System.Drawing;
 using System.IO;
 using System.Text.Json;
+using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
@@ -42,16 +43,19 @@ public class MainWindowViewModel : INotifyPropertyChanged
     public BitmapImage FieldMapImage { get; } = ImageHelper.Bitmap2BitmapImage(Resource.FieldMap);
 
     public SnackbarMessageQueue SnackbarMessageQueue { get; } = new();
+    public ReactivePropertySlim<bool> ShowProgressBar { get; } = new();
     
     private Dispatcher Dispatcher { get; } = Dispatcher.CurrentDispatcher;
     
     public MainWindowViewModel()
     {
         ConnectRobotCommand = IsConnected.Select(x => !x).ToReactiveCommand();
-        ConnectRobotCommand.Subscribe(_ =>
+        ConnectRobotCommand.Subscribe(_ => Task.Run(() =>
         {
+            ShowProgressBar.Value = true;
             try
             {
+                SnackbarMessageQueue.Enqueue("ロボットに接続しています");
                 ConnectRobot();
             }
             catch (Exception e)
@@ -61,14 +65,20 @@ public class MainWindowViewModel : INotifyPropertyChanged
                 SnackbarMessageQueue.Enqueue("ロボットへの接続に失敗しました。");
                 return;
             }
+            finally
+            {
+                ShowProgressBar.Value = false;
+            }
             SnackbarMessageQueue.Enqueue("ロボットへの接続に成功しました。");
-        });
+        }));
         DisconnectRobotCommand = IsConnected.Select(x => x).ToReactiveCommand();
-        DisconnectRobotCommand.Subscribe(_ =>
+        DisconnectRobotCommand.Subscribe(_ => Task.Run(() =>
         {
+            ShowProgressBar.Value = true;
             DisconnectRobot();
+            ShowProgressBar.Value = false;
             SnackbarMessageQueue.Enqueue("ロボットとの接続を切断しました。");
-        });
+        }));
         
         // ロボットの構成を復元
         if (File.Exists(Constants.Path.RobotConfig))

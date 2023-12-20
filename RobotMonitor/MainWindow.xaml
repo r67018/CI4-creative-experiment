@@ -38,7 +38,11 @@
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
-                <Grid>
+                <ProgressBar Grid.Row="0"
+                             IsIndeterminate="True"
+                             Visibility="{Binding ShowProgressBar.Value, Converter={StaticResource BooleanToVisibilityConverter}}"
+                             Style="{StaticResource MaterialDesignCircularProgressBar}"/>
+                <Grid Grid.Row="0">
                     <Image Grid.Row="0"
                            Source="{Binding CameraImage}"></Image>
                     <Image DockPanel.Dock="Right" Source="{Binding FieldMapImage}"
