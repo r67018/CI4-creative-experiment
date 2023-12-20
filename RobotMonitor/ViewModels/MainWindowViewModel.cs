@@ -3,14 +3,18 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Drawing;
 using System.IO;
+using System.Text.Json;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
+using System.Windows.Threading;
+using Accessibility;
 using MaterialDesignThemes.Wpf;
 using Reactive.Bindings;
 using Reactive.Bindings.TinyLinq;
 using RobotController;
 using RobotMonitor.Commands;
 using RobotMonitor.Helper;
+using RobotMonitor.Models.Robot;
 using Image = System.Windows.Controls.Image;
 
 namespace RobotMonitor.ViewModels;
@@ -39,6 +43,8 @@ public class MainWindowViewModel : INotifyPropertyChanged
 
     public SnackbarMessageQueue SnackbarMessageQueue { get; } = new();
     
+    public Dispatcher Dispatcher { get; set; } = Dispatcher.CurrentDispatcher;
+    
     public MainWindowViewModel()
     {
         ConnectRobotCommand = IsConnected.Select(x => !x).ToReactiveCommand();
@@ -64,11 +70,25 @@ public class MainWindowViewModel : INotifyPropertyChanged
             SnackbarMessageQueue.Enqueue("ロボットとの接続を切断しました。");
         });
         
-        IpAddress.Value = "192.168.10.4";
-        Port.Value = 1234;
-        CameraPort.Value = 8080;
-    }
+        // ロボットの構成を復元
+        if (File.Exists(Constants.Path.RobotConfig))
+        {
+            var json = File.ReadAllText(Constants.Path.RobotConfig);
+            var robotConfig = JsonSerializer.Deserialize<RobotConfig>(json);
+            IpAddress.Value = robotConfig.IpAddress;
+            Port.Value = robotConfig.Port;
+            CameraPort.Value = robotConfig.CameraPort;
+        }
+        else
+        {
+            IpAddress.Value = "192.168.10.4";
+            Port.Value = 1234;
+            CameraPort.Value = 8080;
+        }
 
+        Dispatcher.ShutdownStarted += Dispatcher_ShutDownStarted;
+    }
+    
     public void RobotCameraFrameOnReady(object? sender, MjpegProcessor.FrameReadyEventArgs e)
     {
         CameraImage = e.BitmapImage;
@@ -103,4 +123,18 @@ public class MainWindowViewModel : INotifyPropertyChanged
         IsConnected.Value = false;
         CameraImage = null;
     }
+    
+    private void Dispatcher_ShutDownStarted(object? sender, EventArgs e)
+    {
+        // ロボットの構成を保存
+        var robotConfig = new RobotConfig
+        {
+            IpAddress = IpAddress.Value,
+            Port = Port.Value,
+            CameraPort = CameraPort.Value
+        };
+        var json = JsonSerializer.Serialize(robotConfig);
+        File.WriteAllText(Constants.Path.RobotConfig, json);
+    }
+
 }
