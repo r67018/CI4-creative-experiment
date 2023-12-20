@@ -43,7 +43,7 @@ public class MainWindowViewModel : INotifyPropertyChanged
 
     public SnackbarMessageQueue SnackbarMessageQueue { get; } = new();
     
-    public Dispatcher Dispatcher { get; set; } = Dispatcher.CurrentDispatcher;
+    private Dispatcher Dispatcher { get; } = Dispatcher.CurrentDispatcher;
     
     public MainWindowViewModel()
     {
