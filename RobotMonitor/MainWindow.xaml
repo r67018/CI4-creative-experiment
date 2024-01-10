@@ -8,7 +8,6 @@
         xmlns:local="clr-namespace:RobotMonitor"
         xmlns:vm="clr-namespace:RobotMonitor.ViewModels"
         xmlns:bh="clr-namespace:RobotMonitor.Behaviors"
-        xmlns:converter="clr-namespace:RobotMonitor.Converters"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800"
         TextElement.Foreground="{DynamicResource MaterialDesignBody}"
