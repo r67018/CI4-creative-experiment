@@ -52,13 +52,14 @@ public class MainWindowViewModel : INotifyPropertyChanged
         ConnectRobotCommand = IsConnected.Select(x => !x).ToReactiveCommand();
         ConnectRobotCommand.Subscribe(_ => Task.Run(() =>
         {
+            ShowProgressBar.Value = true;
             this.Dispatcher.InvokeAsync(() =>
             {
-                ShowProgressBar.Value = true;
                 try
                 {
                     SnackbarMessageQueue.Enqueue("ロボットに接続しています");
                     ConnectRobot();
+                    SnackbarMessageQueue.Enqueue("ロボットへの接続に成功しました。");
                 }
                 catch (Exception e)
                 {
@@ -71,7 +72,6 @@ public class MainWindowViewModel : INotifyPropertyChanged
                 {
                     ShowProgressBar.Value = false;
                 }
-                SnackbarMessageQueue.Enqueue("ロボットへの接続に成功しました。");
             });
         }));
         DisconnectRobotCommand = IsConnected.Select(x => x).ToReactiveCommand();
