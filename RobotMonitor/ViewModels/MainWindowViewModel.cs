@@ -57,9 +57,18 @@ public class MainWindowViewModel : INotifyPropertyChanged
             {
                 try
                 {
-                    this.Dispatcher.Invoke(() => SnackbarMessageQueue.Enqueue("ロボットに接続しています"));
-                    ConnectRobot();
-                    this.Dispatcher.Invoke(() => SnackbarMessageQueue.Enqueue("ロボットへの接続に成功しました。"));
+                    this.Dispatcher.Invoke(() =>
+                    {
+                        SnackbarMessageQueue.Enqueue("ロボットに接続しています");
+                        RobotController = new RobotController.RobotController(IpAddress.Value, Port.Value, CameraPort.Value);
+                        RobotController.CameraImageReady += RobotCameraFrameOnReady;
+                    });
+                    RobotController!.Connect();
+                    this.Dispatcher.Invoke(() =>
+                    {
+                        IsConnected.Value = true;
+                        SnackbarMessageQueue.Enqueue("ロボットへの接続に成功しました。");
+                    });
                 }
                 catch (Exception e)
                 {
@@ -105,15 +114,6 @@ public class MainWindowViewModel : INotifyPropertyChanged
     {
         CameraImage = e.BitmapImage;
         OnPropertyChanged(nameof(CameraImage));
-    }
-    
-    private void ConnectRobot()
-    {
-        var robotController = new RobotController.RobotController(IpAddress.Value, Port.Value, CameraPort.Value);
-        robotController.CameraImageReady += RobotCameraFrameOnReady;
-        robotController.Connect();
-        RobotController = robotController;
-        IsConnected.Value = true;
     }
     
     public void DisconnectRobot()
