@@ -40,7 +40,14 @@ public class RobotController : IRobotController
         // Create socket
         var socket = new Socket(_ipAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
         IPEndPoint remoteEndPoint = new(_ipAddress, _port);
-        socket.Connect(remoteEndPoint);
+        // Set timeout
+        var result = socket.BeginConnect(remoteEndPoint, null, null);
+        var timeout = TimeSpan.FromSeconds(5);
+        var success = result.AsyncWaitHandle.WaitOne(timeout);
+        if (!success)
+        {
+            throw new SocketException(10060); // Connection timed out.
+        }
         // Send null byte to test connection
         socket.Send(new byte[] {0});
         socket.Shutdown(SocketShutdown.Both);
