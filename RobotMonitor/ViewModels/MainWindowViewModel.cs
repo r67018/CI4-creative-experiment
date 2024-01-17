@@ -106,18 +106,6 @@ public class MainWindowViewModel : INotifyPropertyChanged
     {
         CameraImage = e.BitmapImage;
         OnPropertyChanged(nameof(CameraImage));
-        // Convert the bitmap to a BitmapImage
-        // var bitmap = e.Bitmap;
-        // using var memory = new MemoryStream();
-        // bitmap.Save(memory, System.Drawing.Imaging.ImageFormat.Bmp);
-        // memory.Position = 0;
-        // var bitmapImage = new BitmapImage();
-        // bitmapImage.BeginInit();
-        // bitmapImage.StreamSource = memory;
-        // bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
-        // bitmapImage.EndInit();
-        // bitmapImage.Freeze();
-        // CameraImage = bitmapImage;
     }
     
     private void ConnectRobot()
