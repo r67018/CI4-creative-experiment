@@ -50,30 +50,29 @@ public class MainWindowViewModel : INotifyPropertyChanged
     public MainWindowViewModel()
     {
         ConnectRobotCommand = IsConnected.Select(x => !x).ToReactiveCommand();
-        ConnectRobotCommand.Subscribe(_ => Task.Run(() =>
+        ConnectRobotCommand.Subscribe(_ =>
         {
             ShowProgressBar.Value = true;
-            this.Dispatcher.InvokeAsync(() =>
+            Task.Run(() =>
             {
                 try
                 {
-                    SnackbarMessageQueue.Enqueue("ロボットに接続しています");
+                    this.Dispatcher.Invoke(() => SnackbarMessageQueue.Enqueue("ロボットに接続しています"));
                     ConnectRobot();
-                    SnackbarMessageQueue.Enqueue("ロボットへの接続に成功しました。");
+                    this.Dispatcher.Invoke(() => SnackbarMessageQueue.Enqueue("ロボットへの接続に成功しました。"));
                 }
                 catch (Exception e)
                 {
                     Console.WriteLine(e);
                     DisconnectRobot();
-                    SnackbarMessageQueue.Enqueue("ロボットへの接続に失敗しました。");
-                    return;
+                    this.Dispatcher.Invoke(() => SnackbarMessageQueue.Enqueue("ロボットへの接続に失敗しました。"));
                 }
                 finally
                 {
-                    ShowProgressBar.Value = false;
+                    this.Dispatcher.Invoke(() => ShowProgressBar.Value = false);
                 }
             });
-        }));
+        });
         DisconnectRobotCommand = IsConnected.Select(x => x).ToReactiveCommand();
         DisconnectRobotCommand.Subscribe(_ => Task.Run(() =>
         {
