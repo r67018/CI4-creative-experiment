@@ -44,7 +44,11 @@ public class SendRobotActionCommand : ICommand
         }
         if (Keyboard.IsKeyDown(Key.Space))
         {
-            actions.Add(RobotAction.SpecialAction);
+            actions.Add(RobotAction.SpecialAction1);
+        }
+        if (Keyboard.IsKeyDown(Key.M))
+        {
+            actions.Add(RobotAction.SpecialAction2);
         }
 
         try
