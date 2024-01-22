@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Windows.Input;
 using RobotController;
 using RobotMonitor.ViewModels;
@@ -36,11 +37,11 @@ public class SendRobotActionCommand : ICommand
         }
         if (Keyboard.IsKeyDown(Key.A))
         {
-            actions.Add(RobotAction.TurnLeft);
+            actions.Add(Keyboard.IsKeyDown(Key.LeftShift) ? RobotAction.UrgentAvoidanceLeft : RobotAction.TurnLeft);
         }
         if (Keyboard.IsKeyDown(Key.D))
         {
-            actions.Add(RobotAction.TurnRight);
+            actions.Add(Keyboard.IsKeyDown(Key.LeftShift) ? RobotAction.UrgentAvoidanceRight : RobotAction.TurnRight);
         }
         if (Keyboard.IsKeyDown(Key.Space))
         {

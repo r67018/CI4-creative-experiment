@@ -24,6 +24,8 @@ public class RobotController : IRobotController
         public const byte TurnRight = 0b0000_1000;
         public const byte SpecialAction1 = 0b0001_0000;
         public const byte SpecialAction2 = 0b0010_0000;
+        public const byte UrgentAvoidanceLeft = 0b0100_0000;
+        public const byte UrgentAvoidanceRight = 0b1000_0000;
     }
     
     public RobotController(string ipAddress, int port, int cameraPort)
@@ -93,6 +95,12 @@ public class RobotController : IRobotController
                     break;
                 case RobotAction.SpecialAction2:
                     command |= CommandMask.SpecialAction2;
+                    break;
+                case RobotAction.UrgentAvoidanceLeft:
+                    command |= CommandMask.UrgentAvoidanceLeft;
+                    break;
+                case RobotAction.UrgentAvoidanceRight:
+                    command |= CommandMask.UrgentAvoidanceRight;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(action), action, null);
