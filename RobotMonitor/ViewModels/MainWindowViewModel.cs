@@ -133,7 +133,11 @@ public class MainWindowViewModel : INotifyPropertyChanged
             Port = Port.Value,
             CameraPort = CameraPort.Value
         };
-        var json = JsonSerializer.Serialize(robotConfig);
+        var jsonOption = new JsonSerializerOptions
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+        };
+        var json = JsonSerializer.Serialize(robotConfig, jsonOption);
         File.WriteAllText(Constants.Path.RobotConfig, json);
     }
 
