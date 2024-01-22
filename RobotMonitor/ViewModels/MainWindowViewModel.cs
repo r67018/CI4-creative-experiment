@@ -46,6 +46,10 @@ public class MainWindowViewModel : INotifyPropertyChanged
     public ReactivePropertySlim<bool> ShowProgressBar { get; } = new();
     
     private Dispatcher Dispatcher { get; } = Dispatcher.CurrentDispatcher;
+    private JsonSerializerOptions JsonSerializerOptions { get; } = new()
+    {
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+    };
     
     public MainWindowViewModel()
     {
@@ -95,7 +99,7 @@ public class MainWindowViewModel : INotifyPropertyChanged
         if (File.Exists(Constants.Path.RobotConfig))
         {
             var json = File.ReadAllText(Constants.Path.RobotConfig);
-            var robotConfig = JsonSerializer.Deserialize<RobotConfig>(json);
+            var robotConfig = JsonSerializer.Deserialize<RobotConfig>(json, JsonSerializerOptions);
             IpAddress.Value = robotConfig.IpAddress;
             Port.Value = robotConfig.Port;
             CameraPort.Value = robotConfig.CameraPort;
@@ -133,11 +137,7 @@ public class MainWindowViewModel : INotifyPropertyChanged
             Port = Port.Value,
             CameraPort = CameraPort.Value
         };
-        var jsonOption = new JsonSerializerOptions
-        {
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-        };
-        var json = JsonSerializer.Serialize(robotConfig, jsonOption);
+        var json = JsonSerializer.Serialize(robotConfig, JsonSerializerOptions);
         File.WriteAllText(Constants.Path.RobotConfig, json);
     }
 
