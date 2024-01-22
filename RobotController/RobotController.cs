@@ -12,7 +12,6 @@ public class RobotController : IRobotController
     private IPAddress _ipAddress;
     private int _port;
     private int _cameraPort;
-    private Socket _socket;
     private readonly MjpegDecoder _mjpegDecoder = new();
     
     public event EventHandler<FrameReadyEventArgs>? CameraImageReady;
@@ -32,16 +31,17 @@ public class RobotController : IRobotController
         _ipAddress = IPAddress.Parse(ipAddress);
         _port = port;
         _cameraPort = cameraPort;
-        _socket = new Socket(_ipAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
         
         _mjpegDecoder.FrameReady += _mjpegDecoderOnFrameReady;
     }
     
     public void Connect()
     {
-        // Connect to the robot
+        // Create socket
+        var socket = new Socket(_ipAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
         IPEndPoint remoteEndPoint = new(_ipAddress, _port);
-        var result = _socket.BeginConnect(remoteEndPoint, null, null);
+        // Set timeout
+        var result = socket.BeginConnect(remoteEndPoint, null, null);
         var timeout = TimeSpan.FromSeconds(5);
         var success = result.AsyncWaitHandle.WaitOne(timeout);
         if (!success)
@@ -49,7 +49,9 @@ public class RobotController : IRobotController
             throw new SocketException(10060); // Connection timed out.
         }
         // Send null byte to test connection
-        _socket.Send(new byte[] {0});
+        socket.Send(new byte[] {0});
+        socket.Shutdown(SocketShutdown.Both);
+        socket.Close();
         
         // Connect to the robot's camera stream
         var uri = new Uri($"http://{_ipAddress}:{_cameraPort}/?action=stream");
@@ -58,17 +60,16 @@ public class RobotController : IRobotController
 
     public void Disconnect()
     {
-        if (_socket.Connected)
-        {
-            _socket.Shutdown(SocketShutdown.Both);
-            _socket.Close();
-        }
         // Stop camera stream
         _mjpegDecoder.StopStream();
     }
 
     public void SendAction(IEnumerable<RobotAction> actions)
     {
+        // Create socket
+        var socket = new Socket(_ipAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+        IPEndPoint remoteEndPoint = new(_ipAddress, _port);
+        socket.Connect(remoteEndPoint);
         // Convert actions to bit flags
         byte command = 0;
         foreach (var action in actions)
@@ -98,7 +99,9 @@ public class RobotController : IRobotController
             }
         }
         // Send command
-        _socket.Send(new[] {command});
+        socket.Send(new[] {command});
+        socket.Shutdown(SocketShutdown.Both);
+        socket.Close();
     }
     
     private void _mjpegDecoderOnFrameReady(object? sender, FrameReadyEventArgs e)
